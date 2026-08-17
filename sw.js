@@ -1,5 +1,10 @@
-const CACHE='personal-os-v1-20260817';
-const CORE=['./','./index.html','./manifest.webmanifest','./icon.svg'];
+const CACHE='personal-os-v2-20260817';
+const CORE=[
+  './','./index.html','./manifest.webmanifest','./icon.svg',
+  './app/part-0.txt','./app/part-1.txt','./app/part-2.txt','./app/part-3.txt','./app/part-4.txt',
+  './calendar-patch.js','./calendar-error-patch.js','./calendar-auto-patch.js',
+  './whoop-patch.js','./health-patch.js','./ai-brief-patch.js','./production-patch.js'
+];
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(c=>Promise.allSettled(CORE.map(u=>c.add(u)))).then(()=>self.skipWaiting()));
 });

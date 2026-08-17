@@ -28,12 +28,15 @@
       state.whoopStatus=await ds.whoopStatus();
       render();
       const i=state.whoopStatus?.integration;
-      if(i?.status==='connected'&&!state.whoopAutoSyncing){
-        const age=i.last_synced_at?Date.now()-new Date(i.last_synced_at).getTime():Infinity;
-        if(age>15*60*1000){
-          state.whoopAutoSyncing=true;
-          ds.syncWhoop().then(()=>priorRefresh()).catch(e=>console.warn('whoop auto-sync',e)).finally(()=>{state.whoopAutoSyncing=false});
-        }
+      const tokenAuthorized=state.whoopStatus?.credentialMetadata?.authorized===true;
+      const shouldSync=tokenAuthorized&&(i?.status!=='connected'||!i?.last_synced_at||Date.now()-new Date(i.last_synced_at).getTime()>15*60*1000);
+      if(shouldSync&&!state.whoopAutoSyncing){
+        state.whoopAutoSyncing=true;
+        ds.syncWhoop().then(async()=>{
+          state.whoopStatus=await ds.whoopStatus();
+          await priorRefresh();
+          render();
+        }).catch(e=>console.warn('whoop auto-sync',e)).finally(()=>{state.whoopAutoSyncing=false});
       }
     }catch(e){console.warn('whoop status',e)}
   };
@@ -42,12 +45,14 @@
   settingsPage=function(){
     const base=priorSettings();
     const ws=state.whoopStatus;
-    const connected=ws?.integration?.status==='connected';
+    const tokenAuthorized=ws?.credentialMetadata?.authorized===true;
+    const connected=ws?.integration?.status==='connected'||tokenAuthorized;
     const configured=!!ws?.configured;
     let panel='';
     if(connected){
-      const last=ws.integration?.last_synced_at?new Date(ws.integration.last_synced_at).toLocaleString():'Ready';
-      panel=`<article class="card card-pad"><div class="card-title"><div><h3>WHOOP</h3><div class="chart-sub">Recovery, HRV, RHR, sleep, strain and workouts · OAuth tokens stored server-side.</div></div><button class="secondary" id="whoopSync">↻ Sync now</button></div><div class="connect-card"><div><div class="connect-name">Connected</div><div class="connect-meta">Last synced ${last}</div></div><span class="tag"><span class="status-dot"></span>connected</span></div><p class="hint" style="margin-top:12px">Personal OS refreshes WHOOP while the dashboard is open. Access and refresh tokens remain encrypted in Supabase Vault.</p></article>`;
+      const syncing=ws?.integration?.status!=='connected';
+      const last=ws?.integration?.last_synced_at?new Date(ws.integration.last_synced_at).toLocaleString():(syncing?'Finishing initial sync…':'Ready');
+      panel=`<article class="card card-pad"><div class="card-title"><div><h3>WHOOP</h3><div class="chart-sub">Recovery, HRV, RHR, sleep, strain and workouts · OAuth tokens stored server-side.</div></div><button class="secondary" id="whoopSync">↻ Sync now</button></div><div class="connect-card"><div><div class="connect-name">${syncing?'Authorized':'Connected'}</div><div class="connect-meta">${syncing?'WHOOP authorization succeeded · completing data sync':`Last synced ${last}`}</div></div><span class="tag"><span class="status-dot"></span>${syncing?'syncing':'connected'}</span></div><p class="hint" style="margin-top:12px">Personal OS refreshes WHOOP while the dashboard is open. Access and refresh tokens remain encrypted in Supabase Vault.</p></article>`;
     }else if(configured){
       panel=`<article class="card card-pad"><div class="card-title"><div><h3>AUTHORIZE WHOOP</h3><div class="chart-sub">Developer credentials are stored. Grant Personal OS access through WHOOP.</div></div><span class="tag">OAuth ready</span></div><button class="primary wide" id="whoopAuthorize" style="margin-top:14px">Authorize with WHOOP</button><p class="hint" style="margin-top:12px">WHOOP will open its own sign-in/consent screen and return you here after authorization.</p><details style="margin-top:14px"><summary class="hint" style="cursor:pointer">Replace developer credentials</summary><form id="whoopConfigForm" class="drawer-form" style="margin-top:12px"><label>Client ID</label><input id="whoopClientId" autocomplete="off"><label>Client Secret</label><input id="whoopClientSecret" type="password" autocomplete="new-password"><button class="secondary wide" type="submit">Save replacement credentials</button></form></details></article>`;
     }else{
@@ -71,7 +76,7 @@
 
   const qp=new URLSearchParams(location.search); const result=qp.get('whoop');
   if(result){
-    setTimeout(()=>{if(result==='connected')toast('WHOOP connected and initial data synced');else if(result==='invalid_state')toast('WHOOP authorization expired. Start authorization again.');else toast('WHOOP authorization did not complete.');},500);
+    setTimeout(()=>{if(result==='connected')toast('WHOOP connected and initial data synced');else if(result==='invalid_state')toast('WHOOP authorization expired. Start authorization again.');else toast('WHOOP authorization completed but the initial sync needs a retry.');},500);
     history.replaceState({},'',location.pathname+location.hash);
   }
   refreshFromSupabase().catch(e=>console.warn(e));

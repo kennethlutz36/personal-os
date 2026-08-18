@@ -1,0 +1,76 @@
+c5)}.v2-hbar-row b{font-size:8px;text-align:right}
+      .v2-finance-kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}.v2-finance-kpi{padding:12px;border-radius:13px;border:1px solid var(--v2-line);background:#fff}.v2-finance-kpi span{font-size:7px;color:#8390a4;text-transform:uppercase;display:block}.v2-finance-kpi b{font-size:17px;display:block;margin-top:4px}.v2-finance-kpi em{font-size:7px;color:#8390a4;font-style:normal;display:block;margin-top:3px}
+      .v2-ring{width:112px;height:112px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--ring,#16ad7a) calc(var(--pct)*1%),#e8eef2 0)}.v2-ring>div{width:78px;height:78px;border-radius:50%;background:#fff;display:grid;place-items:center;text-align:center}.v2-ring b{font-size:23px;display:block}.v2-ring span{font-size:7px;color:#8793a5}.v2-health-metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.v2-health-metric{border:1px solid #e4e9f0;border-radius:11px;background:#fff;padding:10px}.v2-health-metric span{font-size:7px;color:#7d899d;text-transform:uppercase;display:block}.v2-health-metric b{font-size:14px;margin-top:3px;display:block}
+      .v2-progress{height:10px;background:#edf1f6;border-radius:99px;overflow:hidden}.v2-progress i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#11b47e,#62d2a9)}
+      .v2-life-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}.v2-life-cat{border:1px solid #e2e7ef;background:#fff;border-radius:13px;padding:12px;cursor:pointer;min-height:116px}.v2-life-cat:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(43,56,80,.08)}.v2-life-cat .ic{font-size:19px}.v2-life-cat b{font-size:9px;display:block;margin-top:8px}.v2-life-cat strong{font-size:18px;display:block;margin-top:5px;color:#6652d5}.v2-life-cat span{font-size:7px;color:#8793a5}.v2-moment-entry{display:grid;grid-template-columns:115px 1fr auto;gap:8px;margin-top:10px}.v2-moment-entry input,.v2-moment-entry textarea{min-width:0}
+      .v2-modal-wrap{position:fixed;inset:0;z-index:12050;background:rgba(20,29,45,.44);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px}.v2-modal{background:#f8fafe;border-radius:18px;box-shadow:0 30px 90px rgba(25,37,61,.3);width:min(720px,96vw);max-height:90vh;overflow:auto;padding:18px}.v2-modal-head{display:flex;justify-content:space-between;gap:12px;align-items:start;margin-bottom:12px}.v2-modal-head h2{font-size:18px;margin:0}.v2-close{border:0;border-radius:9px;background:#e9edf4;width:32px;height:32px;font-size:19px;cursor:pointer}.v2-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}.v2-form .full{grid-column:1/-1}.v2-form label{font-size:8px;font-weight:750;color:#63718a;display:block;margin-bottom:4px}.v2-form input,.v2-form select,.v2-form textarea,.v2-input{width:100%;box-sizing:border-box;border:1px solid #dbe2ed;border-radius:9px;background:#fff;padding:9px 10px;font-size:9px;outline:none}.v2-form input:focus,.v2-form select:focus,.v2-form textarea:focus,.v2-input:focus{border-color:#8799ee;box-shadow:0 0 0 3px rgba(83,107,234,.09)}.v2-form textarea{min-height:78px;resize:vertical}.v2-form-actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:7px;margin-top:4px}
+      .v2-top-add{position:fixed;right:22px;bottom:22px;z-index:3000;width:50px;height:50px;border:0;border-radius:16px;background:linear-gradient(145deg,#526bea,#7a5ee8);color:#fff;font-size:26px;box-shadow:0 14px 36px rgba(83,107,234,.32);cursor:pointer}.v2-top-add:hover{transform:translateY(-2px)}
+      .v2-badge{display:inline-flex;align-items:center;padding:3px 6px;border-radius:99px;font-size:6.5px;font-weight:800;letter-spacing:.04em;background:#eef2f7;color:#647287}.v2-badge.readonly{background:#eef5ff;color:#4277ba}.v2-badge.local{background:#eaf9f2;color:#22825f}
+      @media(max-width:1120px){.v2-task-board{grid-template-columns:repeat(2,1fr)}.v2-workspaces{grid-template-columns:repeat(2,1fr)}.v2-life-grid{grid-template-columns:repeat(3,1fr)}.v2-finance-kpis{grid-template-columns:repeat(3,1fr)}.v2-health-metrics{grid-template-columns:repeat(3,1fr)}}
+      @media(max-width:760px){.v2-grid.two,.v2-grid.three,.v2-grid.four,.v2-actions,.v2-task-board,.v2-workspaces,.v2-life-grid{grid-template-columns:1fr}.v2-finance-kpis{grid-template-columns:1fr 1fr}.v2-week{grid-template-columns:1fr}.v2-day{min-height:auto}.v2-health-metrics{grid-template-columns:1fr 1fr}.v2-form{grid-template-columns:1fr}.v2-form .full{grid-column:1}.v2-moment-entry{grid-template-columns:1fr}.v2-top-add{bottom:76px;right:14px}.v2-hbar-row{grid-template-columns:90px 1fr 48px}}
+    `;document.head.appendChild(s);
+  }
+  addStyles();
+
+  function modal(title,body){
+    document.getElementById('posV2Modal')?.remove();
+    const root=document.createElement('div');root.id='posV2Modal';root.className='v2-modal-wrap';
+    root.innerHTML=`<section class="v2-modal"><div class="v2-modal-head"><div><div class="v2-kicker">PERSONAL OS</div><h2>${esc(title)}</h2></div><button class="v2-close" data-v2-close>×</button></div>${body}</section>`;
+    document.body.appendChild(root);const close=()=>root.remove();root.onclick=e=>{if(e.target===root)close()};root.querySelectorAll('[data-v2-close]').forEach(x=>x.onclick=close);return {root,close};
+  }
+  async function auth(){const u=await ds.auth();if(!u)throw new Error('Sign in first');return u}
+
+  async function loadV2(){
+    if(!ds.user)return;
+    const q=[
+      ds.client.from('tasks').select('*').order('created_at',{ascending:false}),
+      ds.client.from('external_tasks').select('*').order('due_at',{ascending:true,nullsFirst:false}),
+      ds.client.from('events').select('*').order('starts_at',{ascending:true}),
+      ds.client.from('life_items').select('*').order('item_date',{ascending:true,nullsFirst:false}),
+      ds.client.from('life_moments').select('*').order('happened_at',{ascending:false}).limit(100),
+      ds.client.from('health_goals').select('*').maybeSingle(),
+      ds.client.from('finance_budget_allocations').select('*').eq('active',true).order('category'),
+      ds.client.from('finance_spend_snapshots').select('*').order('period_end',{ascending:false}),
+      ds.client.from('finance_merchant_snapshots').select('*').order('period_end',{ascending:false}),
+      ds.client.from('finance_income_snapshots').select('*').order('period_end',{ascending:false}),
+      ds.client.from('finance_daily_snapshots').select('*').order('snapshot_date',{ascending:true}),
+      ds.client.from('dashboard_links').select('*'),
+      ds.client.from('health_daily').select('*').order('metric_date',{ascending:true}),
+      ds.client.from('food_logs').select('*').order('logged_at',{ascending:false}).limit(200),
+      ds.client.from('workout_logs').select('*').order('started_at',{ascending:false}).limit(250),
+      ds.client.from('supplements').select('*').order('created_at',{ascending:false}),
+      ds.client.from('email_messages').select('id,thread_id,account_email,area,subject,received_at,action_state,unread').order('received_at',{ascending:false}).limit(1000),
+      ds.client.from('email_accounts').select('email_address,area,unread_count,needs_reply_count,sync_status')
+    ];
+    const r=await Promise.all(q);const err=r.find(x=>x.error)?.error;if(err)throw err;
+    [V.localTasks,V.externalTasks,V.events,V.lifeItems,V.lifeMoments,V.healthGoals,V.budgets,V.spend,V.merchants,V.income,V.dailyFinance,V.links,V.healthDaily,V.food,V.workouts,V.supplements,V.emailMessages,V.emailAccounts]=[
+      r[0].data||[],r[1].data||[],r[2].data||[],r[3].data||[],r[4].data||[],r[5].data||null,r[6].data||[],r[7].data||[],r[8].data||[],r[9].data||[],r[10].data||[],r[11].data||[],r[12].data||[],r[13].data||[],r[14].data||[],r[15].data||[],r[16].data||[],r[17].data||[]
+    ];V.loaded=true;
+  }
+  const emailThreadCount=kind=>{const seen=new Set();for(const m of V.emailMessages.filter(x=>x.action_state===kind))seen.add(m.thread_id||m.id);return seen.size};
+  const monthlyRecurring=r=>{const a=Math.abs(num(r.last_amount??r.average_amount)),f=String(r.frequency||'monthly').toLowerCase();if(f.includes('annual')||f.includes('year'))return a/12;if(f.includes('quarter'))return a/3;if(f.includes('week')&&!f.includes('bi'))return a*52/12;if(f.includes('bi')&&f.includes('week'))return a*26/12;if(f.includes('day'))return a*365/12;return a};
+  const link=k=>V.links.find(x=>x.link_key===k)?.url||'';
+
+  async function getAI(module,force=false){
+    if(V.aiLoading[module])return;V.aiLoading[module]=true;
+    try{const {data,error}=await ds.client.functions.invoke('personal-ai-insights',{body:{module,force}});if(error)throw error;if(data?.error)throw new Error(data.error);V.ai[module]=data.payload||null;render()}catch(e){console.warn('AI insights',module,e)}finally{V.aiLoading[module]=false}
+  }
+  function aiBlock(module,cls=''){
+    const a=V.ai[module];
+    if(!a)return `<section class="v2-ai-panel ${cls}"><div class="v2-ai-title"><div><div class="v2-kicker">AI ${module.toUpperCase()} DIRECTOR</div><h3>Building live action plan…</h3></div><button class="v2-btn small" data-ai-refresh="${module}">↻</button></div><div class="v2-ai-summary">Personal OS is ranking the current connected data into specific actions.</div></section>`;
+    return `<section class="v2-ai-panel ${cls}"><div class="v2-ai-title"><div><div class="v2-kicker">AI ${module.toUpperCase()} DIRECTOR</div><h3>${esc(a.headline||'Action plan')}</h3></div><button class="v2-btn small" data-ai-refresh="${module}">↻ Refresh</button></div><div class="v2-ai-summary">${esc(a.summary||'')}</div><div class="v2-ai-actions">${(a.actions||[]).slice(0,4).map((x,i)=>`<button data-ai-action="${module}:${i}"><b>${esc(x.title)}</b>${esc(x.why||'')}</button>`).join('')}</div>${a.watchouts?.length?`<div class="v2-pills" style="margin-top:9px">${a.watchouts.slice(0,3).map(x=>`<span class="v2-pill warn">${esc(x)}</span>`).join('')}</div>`:''}</section>`;
+  }
+  function handleAI(module,index){
+    const x=V.ai[module]?.actions?.[index];if(!x)return;const r=String(x.route||'none');
+    if(r==='primeva')return primevaReview();if(r==='email')return openEmail();if(['tasks','calendar','finance','health','life'].includes(r)){state.route=r;render();return}
+  }
+
+  async function createTask(data){
+    const u=await auth();const scheduled=data.kind==='scheduled';const dueAt=scheduled&&data.due_at?new Date(data.due_at).toISOString():null;
+    const row={user_id:u.id,title:data.title.trim(),area:data.area,project:data.project||null,status:scheduled?'Scheduled':'Next',priority:data.priority||'P2',due_date:dueAt?isoDate(new Date(data.due_at)):null,due_at:dueAt,notes:data.notes||null,source_system:'personal_os',task_kind:scheduled?'scheduled':'master'};
+    const {error}=await ds.client.from('tasks').insert(row);if(error)throw error;await loadV2();render();
+  }
+  async function updateTask(id,patch){const u=await auth();const {error}=await ds.client.from('tasks').update({...patch,updated_at:new Date().toISOString()}).eq('id',id).eq('user_id',u.id).eq('source_system','personal_os');if(error)throw error;await loadV2();render()}
+  async function createEvent(data){const u=await auth();const st=new Date(data.starts_at), en=data.ends_at?new Date(data.ends_at):new Date(st.getTime()+60*60000);const row={user_id:u.id,title:data.title.trim(),area:data.area,starts_at:st.toISOString(),ends_at:en.toISOString(),all_day:false,location:data.location||null,notes:data.notes||null,source_system:'personal_os',source_calendar:'Personal OS'};const {error}=await ds.client.from('events').insert(row);if(error)throw error;await loadV2();render()}
+  async function updateEvent(id,patch){const u=await auth();const {error}=await ds.client.from('events').update({...patch,updated_at:new Date().toISOString()}).eq('id',id).eq('user_id',u.id).eq('source_system','personal_os');if(error)throw error;await loadV2();render()}
+  async function addMeal(data){const u=await auth();const row={user_id:u.id,logged_at:data.logged_at

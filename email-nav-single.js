@@ -1,0 +1,11 @@
+(()=>{
+'use strict';
+if(window.__posEmailNavSingle)return;window.__posEmailNavSingle=true;
+const ID='posEmailNavSingle';
+const legacyIds=['emailNavItem','v2EmailNav','posEmailNavPermanent','posEmailNavV5','posEmailFixedFallbackV5','posEmailNavV7'];
+function navItemFromLeaf(leaf){if(!leaf)return null;let el=leaf;for(let i=0;i<7&&el;i++,el=el.parentElement){const r=el.getBoundingClientRect();if(r.left<300&&r.width>=120&&r.height>=28&&r.height<=64)return el}return leaf.closest('button,a,[role="button"]')||leaf.parentElement}
+function textLeaf(label){return [...document.querySelectorAll('body *')].find(el=>el.children.length===0&&el.textContent?.trim()===label&&el.getBoundingClientRect().width>0)}
+function cleanup(){legacyIds.forEach(id=>document.getElementById(id)?.remove());for(const el of [...document.querySelectorAll('button,a,[role="button"]')]){if(el.id===ID)continue;const r=el.getBoundingClientRect();if(r.left<300&&r.width>100&&r.height<70&&el.textContent?.trim()==='Email')el.remove()}}
+function ensure(){cleanup();if(document.getElementById(ID)?.isConnected)return;const finance=navItemFromLeaf(textLeaf('Finance'));if(!finance?.parentElement)return;const b=document.createElement('button');b.id=ID;b.type='button';b.innerHTML='<span style="display:grid;place-items:center;width:18px;height:18px;border-radius:6px;background:linear-gradient(135deg,#22c7d3,#6970ef);color:#fff;font-size:9px">✉</span><span>Email</span>';b.style.cssText='display:flex;align-items:center;gap:11px;width:100%;height:38px;padding:0 12px;border:0;border-radius:9px;background:transparent;color:#d5e1f2;font:500 14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer;text-align:left';b.addEventListener('mouseenter',()=>b.style.background='rgba(255,255,255,.08)');b.addEventListener('mouseleave',()=>b.style.background='transparent');b.onclick=e=>{e.preventDefault();e.stopPropagation();if(window.PersonalOSEmailCenterV6?.open)window.PersonalOSEmailCenterV6.open();else console.warn('Email Center is not loaded')};finance.parentElement.insertBefore(b,finance)}
+ensure();setInterval(ensure,1000);
+})();

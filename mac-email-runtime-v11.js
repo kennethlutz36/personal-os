@@ -1,0 +1,10 @@
+(()=>{'use strict';if(window.__macEmailRuntimeV11)return;window.__macEmailRuntimeV11=1;
+function fixCalendarEvents(){const V=window.PersonalOSV2;if(!V?.events)return;const current=V.events,hasMac=current.some(e=>e.source_system==='apple_mac_bridge'),hasLegacy=current.some(e=>['apple_calendar','three_rivers'].includes(String(e.source_system||'')));if(hasMac&&hasLegacy){V.__v11AllEvents=current;V.events=current.filter(e=>e.source_system==='apple_mac_bridge'||!['apple_calendar','three_rivers'].includes(String(e.source_system||'')));V.__v11FilteredRef=V.events}}
+if(typeof render==='function'){const br=render;render=function(){fixCalendarEvents();return br()}}
+let nativeAt=0,nativePromise=null;function preflightNative(){if(Date.now()-nativeAt<300000)return Promise.resolve();if(nativePromise)return nativePromise;const f=window.PersonalOSData?.client?.functions;if(!f)return Promise.resolve();nativePromise=f.__v11OriginalInvoke('hostinger-mail-native',{body:{action:'sync-metadata'}}).catch(()=>null).finally(()=>{nativeAt=Date.now();nativePromise=null});return nativePromise}
+const fc=window.PersonalOSData?.client?.functions;if(fc&&typeof fc.invoke==='function'&&!fc.__v11OriginalInvoke){fc.__v11OriginalInvoke=fc.invoke.bind(fc);fc.invoke=async function(name,opts){const action=opts?.body?.action;if(name==='personal-email-actions'&&(action==='bulk-trash'||action==='get-body'))await preflightNative();return fc.__v11OriginalInvoke(name,opts)}}
+async function refreshLive(){if(String(window.state?.route||'')!=='calendar')return;if(typeof window.refreshFromSupabase==='function'){try{await window.refreshFromSupabase();fixCalendarEvents()}catch{}}}
+document.addEventListener('click',e=>{const t=e.target?.closest?.('#pv11CalendarRefresh');if(!t)return;setTimeout(refreshLive,3500);setTimeout(refreshLive,8000)},true);
+setInterval(()=>{fixCalendarEvents();refreshLive()},60000);
+setTimeout(fixCalendarEvents,1500);
+})();

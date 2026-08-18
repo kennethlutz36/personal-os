@@ -7,6 +7,8 @@ TMP="$(mktemp -d)"
 SRC="$TMP/PersonalOSMacBridge.swift"
 BIN="$APP/Contents/MacOS/PersonalOSMacBridge"
 SOURCE_URL="https://kennethlutz36.github.io/personal-os/mac-bridge/PersonalOSMacBridge.swift?v=1"
+LAUNCH_DIR="$HOME/Library/LaunchAgents"
+LAUNCH_PLIST="$LAUNCH_DIR/com.personal-os.mac-bridge.plist"
 
 cleanup(){ rm -rf "$TMP"; }
 trap cleanup EXIT
@@ -19,7 +21,7 @@ if ! command -v xcrun >/dev/null 2>&1; then
   exit 1
 fi
 
-mkdir -p "$HOME/Applications" "$APP/Contents/MacOS" "$APP/Contents/Resources"
+mkdir -p "$HOME/Applications" "$APP/Contents/MacOS" "$APP/Contents/Resources" "$LAUNCH_DIR"
 echo "Downloading Personal OS Mac Bridge source…"
 curl -fsSL "$SOURCE_URL" -o "$SRC"
 
@@ -50,7 +52,21 @@ chmod +x "$BIN"
 codesign --force --deep --sign - "$APP" >/dev/null 2>&1 || true
 xattr -dr com.apple.quarantine "$APP" >/dev/null 2>&1 || true
 
+cat > "$LAUNCH_PLIST" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>com.personal-os.mac-bridge</string>
+  <key>ProgramArguments</key><array><string>/usr/bin/open</string><string>-a</string><string>$APP</string></array>
+  <key>RunAtLoad</key><true/>
+  <key>ProcessType</key><string>Interactive</string>
+</dict></plist>
+PLIST
+launchctl bootout "gui/$(id -u)" "$LAUNCH_PLIST" >/dev/null 2>&1 || true
+launchctl bootstrap "gui/$(id -u)" "$LAUNCH_PLIST" >/dev/null 2>&1 || true
+
 echo "Installed: $APP"
+echo "Configured to open automatically when you log in."
 echo "Opening Personal OS Mac Bridge…"
 open "$APP"
 echo ""

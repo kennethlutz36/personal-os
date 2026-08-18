@@ -1,0 +1,3 @@
+(()=>{'use strict';if(window.__icloudAuthoritativeV12)return;window.__icloudAuthoritativeV12=1;
+function enforce(){const V=window.PersonalOSV2;if(V?.__v11AllEvents){V.events=V.__v11AllEvents.filter(e=>!['apple_mac_bridge','three_rivers'].includes(String(e.source_system||'')));delete V.__v11AllEvents}else if(V?.events){V.events=V.events.filter(e=>!['apple_mac_bridge','three_rivers'].includes(String(e.source_system||'')))}document.querySelector('#pv11CalendarTools')?.remove()}
+const s=document.createElement('style');s.textContent='#pv11CalendarTools{display:none!important}';document.head.appendChild(s);setInterval(enforce,1000);setTimeout(enforce,500)})();

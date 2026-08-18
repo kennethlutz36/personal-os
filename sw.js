@@ -1,3 +1,5 @@
-const PREFIX='personal-os';
-self.addEventListener('install',event=>{event.waitUntil(self.skipWaiting());});
-self.addEventListener('activate',event=>{event.waitUntil((async()=>{try{const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith(PREFIX)).map(k=>caches.delete(k)));}catch(e){}try{await self.registration.unregister();}catch(e){}})());});
+const CACHE='personal-os-v10-20260818';
+const CORE=['./','./manifest.webmanifest','./icon.svg'];
+self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
+self.addEventListener('activate',e=>{e.waitUntil((async()=>{const ks=await caches.keys();await Promise.all(ks.filter(k=>k.startsWith('personal-os')&&k!==CACHE).map(k=>caches.delete(k)));await self.clients.claim()})())});
+self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url);if(u.origin!==self.location.origin)return;if(r.mode==='navigate'){e.respondWith((async()=>{try{const n=await fetch(r,{cache:'no-cache'});const c=await caches.open(CACHE);c.put('./',n.clone());return n}catch{return (await caches.match('./'))||Response.error()}})());return}if(/\.(?:js|css|svg|webmanifest)$/.test(u.pathname)||u.pathname.includes('/app/')){e.respondWith((async()=>{const c=await caches.open(CACHE),hit=await c.match(r);const net=fetch(r).then(x=>{if(x.ok)c.put(r,x.clone());return x}).catch(()=>null);return hit||await net||Response.error()})())}});

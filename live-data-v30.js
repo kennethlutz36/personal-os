@@ -17,15 +17,19 @@ function scheduleRender(){
   pendingRender=false;
   try{if(typeof render==='function')render()}catch(e){console.warn('Personal OS live render',e)}
 }
+function normalize(kind,rows){
+  if(kind==='events')return (rows||[]).filter(e=>!['apple_mac_bridge','three_rivers'].includes(String(e?.source_system||'')));
+  return rows||[];
+}
 function sig(kind,rows){
   const keys=kind==='tasks'?['id','title','area','status','priority','due_date','due_at','notes','task_kind','updated_at','completed_at']:
     kind==='external_tasks'?['id','title','area','status','priority','due_date','due_at','notes','synced_at','external_id']:
     kind==='events'?['id','title','area','starts_at','ends_at','all_day','location','notes','source_system','source_calendar','external_id','updated_at','last_synced_at']:
     ['id','provider','source_calendar_id','source_calendar_name','area','enabled','read_only','last_synced_at','updated_at'];
-  return (rows||[]).map(r=>keys.map(k=>String(r?.[k]??'')).join('\u001f')).join('\u001e');
+  return normalize(kind,rows).map(r=>keys.map(k=>String(r?.[k]??'')).join('\u001f')).join('\u001e');
 }
-function current(kind){const v=V();if(!v)return[];if(kind==='tasks')return v.localTasks||[];if(kind==='external_tasks')return v.externalTasks||[];if(kind==='events')return v.events||[];try{return typeof state!=='undefined'?(state.calendarSources||[]):[]}catch{return[]}}
-function assign(kind,rows){const v=V();if(!v)return;if(kind==='tasks')v.localTasks=rows;else if(kind==='external_tasks')v.externalTasks=rows;else if(kind==='events')v.events=rows;else try{if(typeof state!=='undefined')state.calendarSources=rows}catch{}}
+function current(kind){const v=V();if(!v)return[];if(kind==='tasks')return v.localTasks||[];if(kind==='external_tasks')return v.externalTasks||[];if(kind==='events')return normalize('events',v.events||[]);try{return typeof state!=='undefined'?(state.calendarSources||[]):[]}catch{return[]}}
+function assign(kind,rows){const v=V();if(!v)return;rows=normalize(kind,rows);if(kind==='tasks')v.localTasks=rows;else if(kind==='external_tasks')v.externalTasks=rows;else if(kind==='events')v.events=rows;else try{if(typeof state!=='undefined')state.calendarSources=rows}catch{}}
 async function query(kind){
   const cl=c();if(!cl)throw new Error('Personal OS data client unavailable');
   const u=(await cl.auth.getUser()).data?.user;if(!u)throw new Error('Not signed in');
@@ -39,7 +43,7 @@ async function one(kind){
   locks.set(kind,true);
   try{
     const r=await query(kind);if(r.error)throw r.error;
-    const rows=r.data||[],before=sig(kind,current(kind)),after=sig(kind,rows);
+    const rows=normalize(kind,r.data||[]),before=sig(kind,current(kind)),after=sig(kind,rows);
     if(before!==after){assign(kind,rows);return true}
     return false;
   }catch(e){console.warn('Personal OS live refresh',kind,e)}finally{locks.delete(kind)}

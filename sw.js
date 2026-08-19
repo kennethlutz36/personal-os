@@ -1,4 +1,4 @@
-const CACHE='personal-os-v20-calendar-20260818';
+const CACHE='personal-os-v21-todo-20260818';
 const CORE=['./','./manifest.webmanifest','./icon.svg'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{const ks=await caches.keys();await Promise.all(ks.filter(k=>k.startsWith('personal-os')&&k!==CACHE).map(k=>caches.delete(k)));await self.clients.claim()})())});

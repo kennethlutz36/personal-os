@@ -6,7 +6,7 @@ const POLL_MS=30000;
 const c=()=>window.PersonalOSData?.client;
 const V=()=>window.PersonalOSV2;
 const locks=new Map(),timers=new Map();
-let channel=null,pendingRender=false,lastRefresh=0;
+let channel=null,pendingRender=false,lastRefresh=0,started=false;
 
 function route(){try{return typeof state!=='undefined'?String(state.route||'overview'):'overview'}catch{return'overview'}}
 function relevant(){const r=route();return ['overview','tasks','calendar'].includes(r)||!!document.querySelector('#content .v2-task-board,#content .v2-week')}
@@ -39,6 +39,7 @@ async function query(kind){
   return cl.from('calendar_sources').select('*').eq('user_id',u.id).order('source_calendar_name',{ascending:true});
 }
 async function one(kind){
+  if(!V())return false;
   if(locks.get(kind))return false;
   locks.set(kind,true);
   try{
@@ -50,6 +51,7 @@ async function one(kind){
   return false;
 }
 async function refresh(kinds=['tasks','external_tasks','events','calendar_sources'],opts={}){
+  if(!V())return false;
   const list=Array.isArray(kinds)?kinds:[kinds];
   const results=await Promise.all(list.map(async kind=>({kind,changed:await one(kind)})));
   const changed=results.some(x=>x.changed),visualChanged=results.some(x=>x.changed&&x.kind!=='calendar_sources');
@@ -62,7 +64,7 @@ function queue(kind){
   timers.set(kind,setTimeout(()=>{timers.delete(kind);refresh([kind],{render:true})},120));
 }
 function subscribe(){
-  const cl=c();if(!cl?.channel||channel)return;
+  const cl=c();if(!cl?.channel||channel||!V())return;
   try{
     channel=cl.channel('personal-os-live-v30')
       .on('postgres_changes',{event:'*',schema:'public',table:'tasks'},()=>queue('tasks'))
@@ -72,12 +74,22 @@ function subscribe(){
       .subscribe(status=>{if(status==='CHANNEL_ERROR'||status==='TIMED_OUT'){try{cl.removeChannel(channel)}catch{}channel=null;setTimeout(subscribe,4000)}});
   }catch(e){console.warn('Personal OS realtime subscribe',e);channel=null}
 }
-function activeRefresh(){if(document.visibilityState!=='visible')return;if(!relevant())return;refresh(undefined,{render:true})}
+function activeRefresh(){if(document.visibilityState!=='visible'||!V())return;if(!relevant())return;refresh(undefined,{render:true})}
+function start(attempt=0){
+  if(started)return;
+  if(!c()||!V()){
+    if(attempt<80)setTimeout(()=>start(attempt+1),250);
+    return;
+  }
+  started=true;
+  subscribe();
+  refresh(undefined,{render:true});
+  setInterval(activeRefresh,POLL_MS);
+}
 
 document.addEventListener('focusout',()=>{if(pendingRender)setTimeout(()=>{if(!editing())scheduleRender()},100)},true);
-window.addEventListener('focus',()=>{if(Date.now()-lastRefresh>5000)refresh(undefined,{render:true})});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-lastRefresh>5000)refresh(undefined,{render:true})});
-setInterval(activeRefresh,POLL_MS);
-setTimeout(()=>{subscribe();refresh(undefined,{render:true})},1200);
-window.PersonalOSLiveV30={refresh,refreshAll:()=>refresh(undefined,{render:true}),status:()=>({realtime:!!channel,lastRefresh,pendingRender})};
+window.addEventListener('focus',()=>{if(V()&&Date.now()-lastRefresh>5000)refresh(undefined,{render:true})});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&V()&&Date.now()-lastRefresh>5000)refresh(undefined,{render:true})});
+setTimeout(()=>start(),500);
+window.PersonalOSLiveV30={refresh,refreshAll:()=>refresh(undefined,{render:true}),status:()=>({realtime:!!channel,lastRefresh,pendingRender,started})};
 })();

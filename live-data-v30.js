@@ -5,7 +5,7 @@ const OWNER='kennethlutz36@gmail.com';
 const POLL_MS=30000;
 const c=()=>window.PersonalOSData?.client;
 const V=()=>window.PersonalOSV2;
-const locks=new Map();
+const locks=new Map(),timers=new Map();
 let channel=null,pendingRender=false,lastRefresh=0;
 
 function route(){try{return typeof state!=='undefined'?String(state.route||'overview'):'overview'}catch{return'overview'}}
@@ -51,12 +51,16 @@ async function one(kind){
 }
 async function refresh(kinds=['tasks','external_tasks','events','calendar_sources'],opts={}){
   const list=Array.isArray(kinds)?kinds:[kinds];
-  const changed=(await Promise.all(list.map(one))).some(Boolean);
+  const results=await Promise.all(list.map(async kind=>({kind,changed:await one(kind)})));
+  const changed=results.some(x=>x.changed),visualChanged=results.some(x=>x.changed&&x.kind!=='calendar_sources');
   lastRefresh=Date.now();
-  if(changed&&opts.render!==false)scheduleRender();
+  if(visualChanged&&opts.render!==false)scheduleRender();
   return changed;
 }
-function queue(kind){clearTimeout(queue.t);queue.t=setTimeout(()=>refresh([kind],{render:true}),120)}
+function queue(kind){
+  clearTimeout(timers.get(kind));
+  timers.set(kind,setTimeout(()=>{timers.delete(kind);refresh([kind],{render:true})},120));
+}
 function subscribe(){
   const cl=c();if(!cl?.channel||channel)return;
   try{
